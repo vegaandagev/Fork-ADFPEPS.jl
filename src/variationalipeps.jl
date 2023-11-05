@@ -1,7 +1,7 @@
 using FileIO
 using HDF5
 using Optim, LineSearches
-using LinearAlgebra: I, norm
+using LinearAlgebra: I, norm, tr
 using TimerOutputs
 using Zygote
 
@@ -196,7 +196,7 @@ end
 function initial_consts(key)
 	folder, model, Ni, Nj, symmetry, atype, D, χ, tol, maxiter, miniter, indD, indχ, dimsD, dimsχ = key
 
-	h = atype{ComplexF64}.(hamiltonian(model))
+	h = atype{ComplexF64}.(hamiltonian_hand(model))
 	h = (asSymmetryArray(h[1], Val(symmetry); dir = [-1,-1,1,1]),
 	     asSymmetryArray(h[2], Val(symmetry); dir = [-1,1]))
 

@@ -1,4 +1,4 @@
-using ITensors
+#using ITensors
 using OMEinsum
 
 abstract type HamiltonianModel end
@@ -9,6 +9,7 @@ abstract type HamiltonianModel end
 return the hamiltonian of the `model` as a two-site tensor operator.
 "
 function hamiltonian end
+
 export hamiltonian_hand
 
 @doc raw"
@@ -25,33 +26,33 @@ end
 """
 	hamiltonian(model::Hubbard)
 """
-function hamiltonian(model::Hubbard)
-	t = model.t
-	U = model.U
-    μ = model.μ
-    ampo = AutoMPO()
-    sites = siteinds("Electron",2)
-    ampo .+= -t, "Cdagup",1,"Cup",2
-    ampo .+= -t, "Cdagup",2,"Cup",1
-    ampo .+= -t, "Cdagdn",1,"Cdn",2
-    ampo .+= -t, "Cdagdn",2,"Cdn",1
+# function hamiltonian(model::Hubbard)
+# 	t = model.t
+# 	U = model.U
+#     μ = model.μ
+#     ampo = AutoMPO()
+#     sites = siteinds("Electron",2)
+#     ampo .+= -t, "Cdagup",1,"Cup",2
+#     ampo .+= -t, "Cdagup",2,"Cup",1
+#     ampo .+= -t, "Cdagdn",1,"Cdn",2
+#     ampo .+= -t, "Cdagdn",2,"Cdn",1
     
-    if U ≠ 0
-        ampo .+= 1/4*U, "Nupdn", 1
-        ampo .+= 1/4*U, "Nupdn", 2
-    end
-    if μ ≠ 0
-        ampo .+= -1/4*μ, "Ntot", 1
-        ampo .+= -1/4*μ, "Ntot", 2
-    end
-    H = MPO(ampo,sites)
+#     if U ≠ 0
+#         ampo .+= 1/4*U, "Nupdn", 1
+#         ampo .+= 1/4*U, "Nupdn", 2
+#     end
+#     if μ ≠ 0
+#         ampo .+= -1/4*μ, "Ntot", 1
+#         ampo .+= -1/4*μ, "Ntot", 2
+#     end
+#     H = MPO(ampo,sites)
 
-    H1 = Array(H[1],inds(H[1])...)
-    H2 = Array(H[2],inds(H[2])...)
-    h = reshape(ein"aij,apq->ipjq"(H1,H2),16,16)
+#     H1 = Array(H[1],inds(H[1])...)
+#     H2 = Array(H[2],inds(H[2])...)
+#     h = reshape(ein"aij,apq->ipjq"(H1,H2),16,16)
 
-    return h
-end
+#     return h
+# end
 
 @doc raw"
     THubbard(t::Real,U::Real,μ::Real)
@@ -67,35 +68,35 @@ end
 """
 	hamiltonian(model::Hubbard)
 """
-function hamiltonian(model::THubbard)
-	t = model.t
-	U = model.U
-    μ = model.μ
-    ampo = AutoMPO()
-    sites = siteinds("Electron",2)
-    ampo .+= -t, "Cdagup",1,"Cdn",2
-    ampo .+= -t, "Cdagdn",2,"Cup",1
-    ampo .+= t, "Cdagdn",1,"Cup",2
-    ampo .+= t, "Cdagup",2,"Cdn",1
+# function hamiltonian(model::THubbard)
+# 	t = model.t
+# 	U = model.U
+#     μ = model.μ
+#     ampo = AutoMPO()
+#     sites = siteinds("Electron",2)
+#     ampo .+= -t, "Cdagup",1,"Cdn",2
+#     ampo .+= -t, "Cdagdn",2,"Cup",1
+#     ampo .+= t, "Cdagdn",1,"Cup",2
+#     ampo .+= t, "Cdagup",2,"Cdn",1
     
-    if U ≠ 0
-        ampo .+= 1/4*U, "Nupdn", 1
-        ampo .+= 1/4*U, "Nupdn", 2
-    end
-    if μ ≠ 0
-        ampo .+= -1/4*μ, "Nup", 1
-        ampo .+= -1/4*μ, "Ndn", 1
-        ampo .+= -1/4*μ, "Nup", 2
-        ampo .+= -1/4*μ, "Ndn", 2
-    end
-    H = MPO(ampo,sites)
+#     if U ≠ 0
+#         ampo .+= 1/4*U, "Nupdn", 1
+#         ampo .+= 1/4*U, "Nupdn", 2
+#     end
+#     if μ ≠ 0
+#         ampo .+= -1/4*μ, "Nup", 1
+#         ampo .+= -1/4*μ, "Ndn", 1
+#         ampo .+= -1/4*μ, "Nup", 2
+#         ampo .+= -1/4*μ, "Ndn", 2
+#     end
+#     H = MPO(ampo,sites)
 
-    H1 = Array(H[1],inds(H[1])...)
-    H2 = Array(H[2],inds(H[2])...)
-    h = reshape(ein"aij,apq->ipjq"(H1,H2),16,16)
+#     H1 = Array(H[1],inds(H[1])...)
+#     H2 = Array(H[2],inds(H[2])...)
+#     h = reshape(ein"aij,apq->ipjq"(H1,H2),16,16)
 
-    return h
-end
+#     return h
+# end
 
 @doc raw"
     hop_pair(t::Real,γ::Real)
@@ -110,28 +111,28 @@ end
 """
 	hamiltonian(model::hop_pair)
 """
-function hamiltonian(model::hop_pair)
-	t = model.t
-    γ = model.γ
-    ampo = AutoMPO()
-    sites = siteinds("Electron",2)
-    ampo .+= -t, "Cdagup",1,"Cup",2
-    ampo .+= -t, "Cdagup",2,"Cup",1
-    ampo .+= -t, "Cdagdn",1,"Cdn",2
-    ampo .+= -t, "Cdagdn",2,"Cdn",1
+# function hamiltonian(model::hop_pair)
+# 	t = model.t
+#     γ = model.γ
+#     ampo = AutoMPO()
+#     sites = siteinds("Electron",2)
+#     ampo .+= -t, "Cdagup",1,"Cup",2
+#     ampo .+= -t, "Cdagup",2,"Cup",1
+#     ampo .+= -t, "Cdagdn",1,"Cdn",2
+#     ampo .+= -t, "Cdagdn",2,"Cdn",1
     
-    ampo .+= γ, "Cdagup",1,"Cdagdn",2
-    ampo .+= -γ, "Cdagdn",1,"Cdagup",2
-    ampo .+= γ, "Cdn",2,"Cup",1
-    ampo .+= -γ, "Cup",2,"Cdn",1
-    H = MPO(ampo,sites)
+#     ampo .+= γ, "Cdagup",1,"Cdagdn",2
+#     ampo .+= -γ, "Cdagdn",1,"Cdagup",2
+#     ampo .+= γ, "Cdn",2,"Cup",1
+#     ampo .+= -γ, "Cup",2,"Cdn",1
+#     H = MPO(ampo,sites)
 
-    H1 = Array(H[1],inds(H[1])...)
-    H2 = Array(H[2],inds(H[2])...)
-    h = reshape(ein"aij,apq->ipjq"(H1,H2),16,16)
+#     H1 = Array(H[1],inds(H[1])...)
+#     H2 = Array(H[2],inds(H[2])...)
+#     h = reshape(ein"aij,apq->ipjq"(H1,H2),16,16)
 
-    return h
-end
+#     return h
+# end
 
 function hamiltonian_hand(model::Hubbard)
     t = model.t
@@ -203,36 +204,36 @@ end
 """
 	hamiltonian(model::tJ)
 """
-function hamiltonian(model::tJ)
-	t = model.t
-    J = model.J
-    μ = model.μ
-    ampo = AutoMPO()
-    sites = siteinds("tJ",2)
-    ampo .+= -t, "Cdagup",1,"Cup",2
-    ampo .+= -t, "Cdagup",2,"Cup",1
-    ampo .+= -t, "Cdagdn",1,"Cdn",2
-    ampo .+= -t, "Cdagdn",2,"Cdn",1
+# function hamiltonian(model::tJ)
+# 	t = model.t
+#     J = model.J
+#     μ = model.μ
+#     ampo = AutoMPO()
+#     sites = siteinds("tJ",2)
+#     ampo .+= -t, "Cdagup",1,"Cup",2
+#     ampo .+= -t, "Cdagup",2,"Cup",1
+#     ampo .+= -t, "Cdagdn",1,"Cdn",2
+#     ampo .+= -t, "Cdagdn",2,"Cdn",1
     
-    ampo .+= J/2, "S+",1,"S-",2
-    ampo .+= J/2, "S-",1,"S+",2
-    ampo .+= J, "Sz",1,"Sz",2
+#     ampo .+= J/2, "S+",1,"S-",2
+#     ampo .+= J/2, "S-",1,"S+",2
+#     ampo .+= J, "Sz",1,"Sz",2
 
-    ampo .+= -J/4, "Ntot",1,"Ntot",2
+#     ampo .+= -J/4, "Ntot",1,"Ntot",2
 
-    if μ ≠ 0
-        ampo .+= μ, "Ntot", 1
-        ampo .+= μ, "Ntot", 2
-    end
+#     if μ ≠ 0
+#         ampo .+= μ, "Ntot", 1
+#         ampo .+= μ, "Ntot", 2
+#     end
 
-    H = MPO(ampo,sites)
+#     H = MPO(ampo,sites)
 
-    H1 = Array(H[1],inds(H[1])...)
-    H2 = Array(H[2],inds(H[2])...)
-    h = reshape(ein"aij,apq->ipjq"(H1,H2),9,9)
+#     H1 = Array(H[1],inds(H[1])...)
+#     H2 = Array(H[2],inds(H[2])...)
+#     h = reshape(ein"aij,apq->ipjq"(H1,H2),9,9)
 
-    return h
-end
+#     return h
+# end
 
 function hamiltonian_hand(model::tJ)
     t = model.t
@@ -285,70 +286,70 @@ struct tJ_bilayer <: HamiltonianModel
     μ::Real
 end
 
-function hamiltonian(model::tJ_bilayer)
-    t二 = model.t二
-    J二 = model.J二
-    t⊥ = model.t⊥
-    J⊥ = model.J⊥
-    μ = model.μ
+# function hamiltonian(model::tJ_bilayer)
+#     t二 = model.t二
+#     J二 = model.J二
+#     t⊥ = model.t⊥
+#     J⊥ = model.J⊥
+#     μ = model.μ
 
-    ampo = AutoMPO()
-    sites = siteinds("tJ",4)
-    ampo .+= -t二, "Cdagup",1,"Cup",3
-    ampo .+= -t二, "Cdagup",3,"Cup",1
-    ampo .+= -t二, "Cdagdn",1,"Cdn",3
-    ampo .+= -t二, "Cdagdn",3,"Cdn",1
+#     ampo = AutoMPO()
+#     sites = siteinds("tJ",4)
+#     ampo .+= -t二, "Cdagup",1,"Cup",3
+#     ampo .+= -t二, "Cdagup",3,"Cup",1
+#     ampo .+= -t二, "Cdagdn",1,"Cdn",3
+#     ampo .+= -t二, "Cdagdn",3,"Cdn",1
     
-    ampo .+= -t二, "Cdagup",2,"Cup",4
-    ampo .+= -t二, "Cdagup",4,"Cup",2
-    ampo .+= -t二, "Cdagdn",2,"Cdn",4
-    ampo .+= -t二, "Cdagdn",4,"Cdn",2
+#     ampo .+= -t二, "Cdagup",2,"Cup",4
+#     ampo .+= -t二, "Cdagup",4,"Cup",2
+#     ampo .+= -t二, "Cdagdn",2,"Cdn",4
+#     ampo .+= -t二, "Cdagdn",4,"Cdn",2
 
-    ampo .+= J二/2, "S+",1,"S-",3
-    ampo .+= J二/2, "S-",1,"S+",3
-    ampo .+= J二, "Sz",1,"Sz",3
+#     ampo .+= J二/2, "S+",1,"S-",3
+#     ampo .+= J二/2, "S-",1,"S+",3
+#     ampo .+= J二, "Sz",1,"Sz",3
 
-    ampo .+= J二/2, "S+",2,"S-",4
-    ampo .+= J二/2, "S-",2,"S+",4
-    ampo .+= J二, "Sz",2,"Sz",4
+#     ampo .+= J二/2, "S+",2,"S-",4
+#     ampo .+= J二/2, "S-",2,"S+",4
+#     ampo .+= J二, "Sz",2,"Sz",4
     
-    ampo .+= -J二/4, "Ntot",1,"Ntot",3
-    ampo .+= -J二/4, "Ntot",2,"Ntot",4
+#     ampo .+= -J二/4, "Ntot",1,"Ntot",3
+#     ampo .+= -J二/4, "Ntot",2,"Ntot",4
 
-    if μ ≠ 0
-        ampo .+= μ, "Ntot",1
-        ampo .+= μ, "Ntot",2
-        ampo .+= μ, "Ntot",3
-        ampo .+= μ, "Ntot",4
-    end
+#     if μ ≠ 0
+#         ampo .+= μ, "Ntot",1
+#         ampo .+= μ, "Ntot",2
+#         ampo .+= μ, "Ntot",3
+#         ampo .+= μ, "Ntot",4
+#     end
 
-    H = MPO(ampo,sites)
+#     H = MPO(ampo,sites)
 
-    H1 = Array(H[1],inds(H[1])...)
-    H2 = Array(H[2],inds(H[2])...)
-    H3 = Array(H[3],inds(H[3])...)
-    H4 = Array(H[4],inds(H[4])...)
-    H二 = reshape(ein"iae,ijbf,jkcg,kdh->cdabghef"(H1,H2,H3,H4),9,9,9,9)
+#     H1 = Array(H[1],inds(H[1])...)
+#     H2 = Array(H[2],inds(H[2])...)
+#     H3 = Array(H[3],inds(H[3])...)
+#     H4 = Array(H[4],inds(H[4])...)
+#     H二 = reshape(ein"iae,ijbf,jkcg,kdh->cdabghef"(H1,H2,H3,H4),9,9,9,9)
 
-    ampo = AutoMPO()
-    sites = siteinds("tJ",2)
-    ampo .+= -t⊥, "Cdagup",1,"Cup",2
-    ampo .+= -t⊥, "Cdagup",2,"Cup",1
-    ampo .+= -t⊥, "Cdagdn",1,"Cdn",2
-    ampo .+= -t⊥, "Cdagdn",2,"Cdn",1
+#     ampo = AutoMPO()
+#     sites = siteinds("tJ",2)
+#     ampo .+= -t⊥, "Cdagup",1,"Cup",2
+#     ampo .+= -t⊥, "Cdagup",2,"Cup",1
+#     ampo .+= -t⊥, "Cdagdn",1,"Cdn",2
+#     ampo .+= -t⊥, "Cdagdn",2,"Cdn",1
     
-    ampo .+= J⊥/2, "S+",1,"S-",2
-    ampo .+= J⊥/2, "S-",1,"S+",2
-    ampo .+= J⊥, "Sz",1,"Sz",2
+#     ampo .+= J⊥/2, "S+",1,"S-",2
+#     ampo .+= J⊥/2, "S-",1,"S+",2
+#     ampo .+= J⊥, "Sz",1,"Sz",2
 
-    H = MPO(ampo,sites)
+#     H = MPO(ampo,sites)
 
-    H1 = Array(H[1],inds(H[1])...)
-    H2 = Array(H[2],inds(H[2])...)
-    H⊥ = reshape(ein"aij,apq->ipjq"(H1,H2),9,9)
+#     H1 = Array(H[1],inds(H[1])...)
+#     H2 = Array(H[2],inds(H[2])...)
+#     H⊥ = reshape(ein"aij,apq->ipjq"(H1,H2),9,9)
 
-    return H二,  H⊥
-end
+#     return H二,  H⊥
+# end
 
 kronplus(A) = mapreduce(x->kron(x[1], x[2]), +, A)
 
